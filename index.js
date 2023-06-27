@@ -8,8 +8,8 @@ const bodyParser = require('body-parser')
 
 const app = express()
 
-const userRoutes = require('./src/routes/userRoutes')
-const circleRoutes = require('./src/routes/circleRoutes')
+const user_routes = require('./src/routes/userRoutes')
+const circle_routes = require('./src/routes/circleRoutes')
 
 app.use(helmet())
 app.use(cors({ origin: '*' }))
@@ -17,8 +17,8 @@ app.use(express.json())
 app.use(bodyParser.urlencoded())
 app.use(express.urlencoded({ extended: true }))
 
-app.use('/api/auth/user/', userRoutes)
-app.use('/api/auth/circle/', circleRoutes)
+app.use('/api/auth/user/', user_routes)
+app.use('/api/auth/circle/', circle_routes)
 
 
 app.listen(process.env.PORT, () => {

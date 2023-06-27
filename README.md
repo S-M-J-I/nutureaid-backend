@@ -1,5 +1,22 @@
 # The backend repository of AgeWell
 
+## GETTING STARTED
+
+To start working on the project, clone the repository:
+```sh
+git clone https://github.com/S-M-J-I/agewell-backend.git
+```
+if you're using SSH:
+```sh
+git clone git@github.com:S-M-J-I/agewell-backend.git
+```
+\
+The next step is to be updated with the npm packages and env.
+Run to get the packages used:
+```sh
+npm install
+```
+
 
 ## RULES OF CONTRIBUTION
 

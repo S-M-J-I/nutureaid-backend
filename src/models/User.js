@@ -13,8 +13,7 @@ function AbstractEntitySchema() {
         objectID: { type: String },
         id: { type: String },
         uid: { type: String, trim: true, unique: true, },
-        first_name: { type: String, trim: true, unique: true, required: true, },
-        last_name: { type: String, trim: true, unique: true, required: true, },
+        fullname: { type: String, trim: true, unique: true, required: true, },
         blood_group: { type: String, trim: true },
         gender: { type: String, trim: true },
         phone: { type: String, trim: true },
@@ -41,7 +40,7 @@ const UserSchema = new AbstractEntitySchema({
     },
     is_verified: { type: Boolean, default: false },
     tokens: [{
-        token: { type: String, required: true }
+        token: { type: String, required: true, trim: true }
     }]
 }, { timestamps: true })
 
@@ -60,13 +59,14 @@ UserSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email })
 
     if (!user) {
-        throw new Error("Unable to log in. Account does not exists!")
+        throw new Error({ message: "Unable to log in. Account does not exists!" })
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
-        throw new Error("Unable to log in. Invalid email or password!")
+        throw new Error({ message: "Unable to log in. Invalid email or password!" })
     }
+
 
     return user
 }

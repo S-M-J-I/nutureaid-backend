@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Circle = require('../models/Circle')
+const Circle = require('../../models/Circle')
 
 const multer = require('multer')
 const uploadAvatar = multer({ dest: 'images/avatar' })
@@ -11,8 +11,6 @@ const path = require('path')
 router.post('/create', uploadAvatar.single('avatar'), async (req, res) => {
 
     try {
-        // console.log(req.body)
-        // await userMiddleware.saveUser(req.body, req.file, "user")
         const circle = new Circle(req.body)
         await circle.save()
         res.status(200).send({ message: "success" })

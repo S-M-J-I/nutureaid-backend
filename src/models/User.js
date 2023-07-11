@@ -14,12 +14,15 @@ function AbstractEntitySchema() {
         id: { type: String },
         uid: { type: String, trim: true, unique: true, },
         fullname: { type: String, trim: true, unique: true, required: true, },
-        blood_group: { type: String, trim: true },
+        biography: { type: String, trim: true, },
+        type: { type: String, trim: true, default: "unset" },
+        blood_group: { type: String, trim: true, },
         gender: { type: String, trim: true },
         phone: { type: String, trim: true },
         address: { type: String, trim: true },
         rewards: { type: Number, default: 0.00, },
         avatar: { type: String, trim: true, },
+        rating: { type: Number, default: 0.00 }
     });
 };
 util.inherits(AbstractEntitySchema, Schema);

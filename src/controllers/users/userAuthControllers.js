@@ -10,7 +10,11 @@ const { User } = require('../../models/User')
 const userSignup = async (req, res, next) => {
     try {
         const user = new User(req.body)
+
         await user.save()
+
+        console.log("HERE")
+
         res.status(200).send({ message: "success" })
     } catch (err) {
         res.status(500).send({ message: "internal error" })
@@ -30,13 +34,19 @@ const userLogin = async (req, res, next) => {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = req.body.token
 
+        if (!user) {
+            res.status(404).send({ message: "User not found" })
+        }
+
         user.tokens = user.tokens.concat({ token })
-        req.headers.authorization = 'Bearer ' + token
         await user.save()
+
+        req.headers.authorization = 'Bearer ' + token
+
 
         res.status(200).send({ message: "success" })
     } catch (err) {
-        res.status(500).send({ message: "internal error" })
+        res.status(500).send(err)
     }
 }
 

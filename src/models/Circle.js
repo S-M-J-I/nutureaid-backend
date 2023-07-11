@@ -10,7 +10,7 @@ const CircleSchema = mongoose.Schema({
     },
     circle_members: [{
         type: String,
-        trime: true
+        trim: true
     }],
     circle_code: {
         type: String,

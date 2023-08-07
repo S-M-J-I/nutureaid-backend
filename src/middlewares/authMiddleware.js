@@ -11,6 +11,8 @@ const checkAuth = async (req, res, next) => {
 
         const user = await User.findOne({ 'tokens.token': auth_token })
 
+
+
         req.body.uid = user.uid
 
         next()

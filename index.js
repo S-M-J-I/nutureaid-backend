@@ -8,9 +8,6 @@ const body_parser = require('body-parser')
 
 const app = express()
 
-const user_routes = require('./src/routes/auth/userAuthRoutes')
-const nurse_routes = require('./src/routes/auth/nurseRoutes')
-// const circle_routes = require('./src/routes/auth/circleAuthRoutes')
 
 app.use(helmet())
 app.use(cors({ origin: '*' }))
@@ -20,9 +17,17 @@ app.use(body_parser.urlencoded({ extended: false }))
 app.use(express.urlencoded({ extended: true }))
 
 
+
+const user_routes = require('./src/routes/userRoutes')
+const appointment_routes = require('./src/routes/appointmentRoutes')
+// const circle_routes = require('./src/routes/auth/circleAuthRoutes')
+
+
+
 // * AUTH SERVICE ROUTES
+
 app.use('/api/auth/user/', user_routes)
-app.use('/api/auth/nurse/', nurse_routes)
+app.use('/api/auth/appointment/', appointment_routes)
 // app.use('/api/auth/circle/', circle_routes)
 
 app.use('*', (req, res, next) => {

@@ -1,4 +1,4 @@
-const { User } = require('../../models/User')
+const { User } = require('../models/User')
 
 /**
  * Make a user entry into the database
@@ -69,7 +69,7 @@ const userLogout = async (req, res, next) => {
         }
 
 
-        user.tokens = user.tokens.filter((token) => auth_token !== token.token)
+        user.tokens = []
 
         res.removeHeader('authorization')
 

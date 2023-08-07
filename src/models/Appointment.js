@@ -21,12 +21,24 @@ const AppointmentSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
+    working_days: {
+        type: Number,
+        required: true,
+    },
     cost: {
         type: Number,
         required: true,
         default: 0
     },
     approved: {
+        type: Boolean,
+        default: false
+    },
+    ongoing: {
+        type: Boolean,
+        default: false,
+    },
+    completed: {
         type: Boolean,
         default: false
     }

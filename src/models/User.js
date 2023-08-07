@@ -22,7 +22,9 @@ function AbstractEntitySchema() {
         address: { type: String, trim: true },
         rewards: { type: Number, default: 0.00, },
         avatar: { type: String, trim: true, },
-        rating: { type: Number, default: 0.00 }
+        rating: { type: Number, default: 0.00 },
+        ongoingAppointment: { type: Boolean, default: false },
+        ongoingAppointmentID: { type: String, trim: true }
     });
 };
 util.inherits(AbstractEntitySchema, Schema);
@@ -101,6 +103,10 @@ const NurseSchema = new AbstractEntitySchema({
         }
     },
     is_verified: { type: Boolean, default: false },
+    specialities: [{
+        type: String,
+        trim: true
+    }],
     tokens: [{
         token: { type: String, required: true }
     }]

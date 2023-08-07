@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Circle = require('../../models/Circle')
+const Circle = require('../models/Circle')
 
 const multer = require('multer')
 const uploadAvatar = multer({ dest: 'images/avatar' })

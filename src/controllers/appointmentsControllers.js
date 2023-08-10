@@ -1,5 +1,6 @@
 const Appointment = require("../models/Appointment")
 const { User } = require("../models/User")
+const { getUserDetails } = require("./userController")
 
 const getAllNurses = async (req, res, next) => {
     try {
@@ -14,7 +15,19 @@ const getAllNurses = async (req, res, next) => {
 
 const getPendingAppointmentsForUser = async (req, res, next) => {
     try {
-        const pending = await Appointment.find({ approved: false, booked_by: req.body.uid })
+
+        let pending = await Appointment.find({ approved: false, booked_by: req.body.uid })
+        pending = await Promise.all(pending.map(async (item, index) => {
+            try {
+                const booked_nurse = item.booked_nurse
+                const nurse = await getUserDetails(booked_nurse, "nurse", ["is_verified", "rewards"])
+                item.booked_nurse = nurse
+                return item
+            } catch (err) {
+                // handle error 
+            }
+        }))
+
 
         res.status(200).send(pending)
     } catch (err) {

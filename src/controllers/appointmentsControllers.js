@@ -55,7 +55,7 @@ const bookAppointment = async (req, res, next) => {
         const appointment = new Appointment(appointment_details)
         await appointment.save()
 
-        res.status(201).send({ message: "success" })
+        res.status(201).send({ message: "Success" })
 
     } catch (err) {
         res.status(500).send({ message: "Internal server error" })
@@ -63,4 +63,45 @@ const bookAppointment = async (req, res, next) => {
 }
 
 
-module.exports = { getAllNurses, bookAppointment, getPendingAppointmentsForUser }
+const confirmAppointmentStatus = async (req, res, next) => {
+    try {
+        const nurse_uid = req.body.uid
+        const appointment_id = req.params.id
+        const status = req.body.status // can either be "approved" / "rejected"
+
+        const appointment = await Appointment.findOne({ _id: appointment_id })
+        appointment[status] = true
+
+        if (status === "approved") {
+            appointment.ongoing = true
+        }
+
+        await appointment.save()
+
+        return res.status(200).send({ message: "Success" })
+    } catch (err) {
+        res.status(500).send({ message: "Error" })
+    }
+}
+
+
+const completeAppointment = async (req, res, next) => {
+    try {
+        const nurse_uid = req.body.uid
+        const appointment_id = req.params.id
+
+        const appointment = await Appointment.findOne({ _id: appointment_id })
+        appointment.ongoing = false
+        appointment.completed = true
+
+        await appointment.save()
+
+        return res.status(200).send({ message: "Success" })
+    } catch (err) {
+        res.status(500).send({ message: "Error" })
+    }
+}
+
+
+
+module.exports = { getAllNurses, bookAppointment, getPendingAppointmentsForUser, confirmAppointmentStatus, completeAppointment }

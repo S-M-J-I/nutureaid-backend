@@ -34,6 +34,10 @@ const AppointmentSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    rejected: {
+        type: Boolean,
+        default: false
+    },
     ongoing: {
         type: Boolean,
         default: false,

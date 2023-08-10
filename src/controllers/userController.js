@@ -15,7 +15,7 @@ const userSignup = async (req, res, next) => {
 
         console.log("HERE")
 
-        res.status(200).send({ message: "success" })
+        res.status(201).send({ message: "success" })
     } catch (err) {
         res.status(500).send({ message: "internal error" })
     }
@@ -38,13 +38,17 @@ const userLogin = async (req, res, next) => {
             res.status(404).send({ message: "User not found" })
         }
 
+        if (user.tokens.length > 0) {
+            user.tokens = []
+        }
+
         user.tokens = user.tokens.concat({ token })
         await user.save()
 
         req.headers.authorization = 'Bearer ' + token
 
+        res.status(200).send(user.cleanUser())
 
-        res.status(200).send({ message: "success" })
     } catch (err) {
         res.status(500).send(err)
     }
@@ -68,7 +72,6 @@ const userLogout = async (req, res, next) => {
             return
         }
 
-
         user.tokens = []
 
         res.removeHeader('authorization')
@@ -77,12 +80,72 @@ const userLogout = async (req, res, next) => {
 
         res.status(200).send({ message: "success" })
     } catch (err) {
-        res.status(500).send({ message: "internal error" })
+        res.status(500).send({ message: "Internal Server Error" })
     }
 }
+
+
+const fetchUserDetailsApiMethod = async (req, res, next) => {
+    try {
+
+        const uid = req.body.uid
+        const user = await User.findOne({ uid })
+
+        if (!user) {
+            res.status(404).send({ message: "Not Found" })
+        }
+
+
+        res.status(200).send(user.cleanUser())
+    } catch (err) {
+        res.status(500).send({ message: "Internal Server Error" })
+    }
+}
+
+
+// const fetchUserDetailsAndAppointmentStatus = async (req, res, next) => {
+
+//     try {
+
+//         const uid = req.body.uid
+//         console.log(uid)
+//         const user = await getUserDetails(uid, "none", ["uid"])
+
+
+//         if (!user) {
+//             res.status(404).send({ message: "Not Found" })
+//         }
+
+//         res.status(200).send(user)
+//     } catch (err) {
+//         res.status(500).send({ message: "Internal Server Error" })
+//     }
+// }
+
+
+const getUserDetails = async (uid, type, exclusions = []) => {
+    try {
+
+        const user = (type === "none") ? await User.findOne({ uid }) : await User.findOne({ uid, type })
+
+        if (!user) {
+            res.status(404).send({ message: "Not Found" })
+        }
+
+
+        return user.cleanUser(exclusions)
+    } catch (err) {
+        res.status(500).send({ message: "Internal Server Error" })
+    }
+}
+
+
 
 module.exports = {
     userSignup,
     userLogin,
-    userLogout
+    userLogout,
+    getUserDetails,
+    fetchUserDetailsApiMethod,
+    // fetchUserDetailsAndAppointmentStatus
 }

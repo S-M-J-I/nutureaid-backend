@@ -49,16 +49,33 @@ const UserSchema = new AbstractEntitySchema({
     }]
 }, { timestamps: true })
 
-UserSchema.methods.toJSON = function () {
+UserSchema.methods.cleanUser = function (exclusions = []) {
     const user = this
 
     const userObject = user.toObject()
 
     // delete user elements that can't be sent to front end
     delete userObject.password
+    delete userObject.createdAt
+    delete userObject.updatedAt
+    delete userObject.timestamp
+    delete userObject._id
+    delete userObject.tokens
+    delete userObject.__V
+
+
+    if (exclusions.length === 0) {
+        return userObject
+    }
+
+    for (let param in exclusions) {
+        delete userObject[param]
+    }
 
     return userObject
 }
+
+
 
 UserSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email })

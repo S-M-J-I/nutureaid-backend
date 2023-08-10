@@ -24,7 +24,7 @@ function AbstractEntitySchema() {
         avatar: { type: String, trim: true, },
         rating: { type: Number, default: 0.00 },
         ongoingAppointment: { type: Boolean, default: false },
-        ongoingAppointmentID: { type: String, trim: true }
+        ongoingAppointmentID: { type: String, trim: true, default: "none" }
     });
 };
 util.inherits(AbstractEntitySchema, Schema);
@@ -130,12 +130,6 @@ const NurseSchema = new AbstractEntitySchema({
 }, { timestamps: true })
 
 
-
-
-
-
-
 // * ALL THE SCHEMAS
 const User = mongoose.model('User', UserSchema)
-
 module.exports = { User }

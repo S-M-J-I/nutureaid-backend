@@ -31,7 +31,7 @@ app.use('/api/auth/appointment/', appointment_routes)
 // app.use('/api/auth/circle/', circle_routes)
 
 app.use('*', (req, res, next) => {
-    res.status(404).send({ message: "Not Found" })
+    res.status(404).send({ message: "Resource Not Found" })
 })
 
 app.listen(process.env.PORT, () => {

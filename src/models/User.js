@@ -84,11 +84,6 @@ UserSchema.statics.findByCredentials = async (email, password) => {
         throw new Error({ message: "Unable to log in. Account does not exists!" })
     }
 
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) {
-        throw new Error({ message: "Unable to log in. Invalid email or password!" })
-    }
-
 
     return user
 }

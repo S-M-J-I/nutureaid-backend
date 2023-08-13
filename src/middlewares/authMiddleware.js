@@ -11,6 +11,11 @@ const checkAuth = async (req, res, next) => {
 
         const user = await User.findOne({ 'tokens.token': auth_token })
 
+        if (!user) {
+            res.status(404).send({ message: "Auth didn't find user" })
+            return
+        }
+
         req.body.uid = user.uid
 
         next()

@@ -47,6 +47,8 @@ const userLogin = async (req, res, next) => {
 
         req.headers.authorization = 'Bearer ' + token
 
+        // console.log(user)
+
         res.status(200).send(user.cleanUser())
 
     } catch (err) {
@@ -91,8 +93,9 @@ const fetchUserDetailsApiMethod = async (req, res, next) => {
         const uid = req.body.uid
         const user = await User.findOne({ uid })
 
+
         if (!user) {
-            res.status(404).send({ message: "Not Found" })
+            res.status(404).send({ message: "Not Found User" })
         }
 
 
@@ -103,36 +106,17 @@ const fetchUserDetailsApiMethod = async (req, res, next) => {
 }
 
 
-// const fetchUserDetailsAndAppointmentStatus = async (req, res, next) => {
-
-//     try {
-
-//         const uid = req.body.uid
-//         console.log(uid)
-//         const user = await getUserDetails(uid, "none", ["uid"])
-
-
-//         if (!user) {
-//             res.status(404).send({ message: "Not Found" })
-//         }
-
-//         res.status(200).send(user)
-//     } catch (err) {
-//         res.status(500).send({ message: "Internal Server Error" })
-//     }
-// }
-
-
 const getUserDetails = async (uid, type, exclusions = []) => {
     try {
 
         const user = (type === "none") ? await User.findOne({ uid }) : await User.findOne({ uid, type })
 
         if (!user) {
-            res.status(404).send({ message: "Not Found" })
+            res.status(404).send({ message: "Not Found user details" })
         }
 
 
+        // console.log(user)
         return user.cleanUser(exclusions)
     } catch (err) {
         res.status(500).send({ message: "Internal Server Error" })

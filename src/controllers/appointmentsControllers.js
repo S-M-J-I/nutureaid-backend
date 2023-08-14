@@ -95,8 +95,8 @@ const confirmAppointmentStatus = async (req, res, next) => {
 
 
             // find user and nurse
-            const user = await User.findOne({ uid: appointment.booked_by, type: "user" })
-            const nurse = await User.findOne({ uid: appointment.booked_nurse, type: "nurse" })
+            const user = await User.findOne({ uid: appointment.booked_by, type: "user" }).select({ ongoingAppointment: 1, ongoingAppointmentID: 1 })
+            const nurse = await User.findOne({ uid: appointment.booked_nurse, type: "nurse" }).select({ ongoingAppointment: 1, ongoingAppointmentID: 1 })
 
 
             // set user and nurse appointment ongoing and ID
@@ -109,9 +109,7 @@ const confirmAppointmentStatus = async (req, res, next) => {
 
             message = "Sucess! Appointment Ongoing"
 
-            // save all objects
-            await user.save()
-            await nurse.save()
+            await Promise.all([user.save(), nurse.save()])
 
 
         } else if (status === "rejected") {
@@ -146,5 +144,44 @@ const completeAppointment = async (req, res, next) => {
 }
 
 
+const getAppointmentDetailsById = async (req, res, next) => {
+    try {
+        const appointment_id = req.params.id
 
-module.exports = { getAllNurses, bookAppointment, getPendingAppointmentsForUser, confirmAppointmentStatus, completeAppointment }
+        const appointment = await Appointment.findOne({ _id: appointment_id, approved: true }).lean()
+        if (!appointment) {
+            res.status(404).send({ message: "Invalid appointment" })
+            return
+        }
+
+        const nurse_select_options = { email: 1, uid: 1, fullname: 1, gender: 1, phone: 1, address: 1, rating: 1, specialities: 1, blood_group: 1, }
+        const user_select_options = { email: 1, uid: 1, fullname: 1, blood_group: 1, gender: 1, phone: 1, address: 1, }
+
+        const [nurse, user] = await Promise.all([
+            User.findOne({ uid: appointment.booked_nurse, type: "nurse" }).select(nurse_select_options),
+            User.findOne({ uid: appointment.booked_by, type: "user" }).select(user_select_options)
+        ])
+
+        if (!nurse) {
+            res.status(404).send({ message: "Nurse not found for this appointment" })
+        }
+
+        if (!user) {
+            res.status(404).send({ message: "User not found for this appointment" })
+        }
+
+
+        appointment.nurseDetails = nurse.cleanUser()
+        appointment.userDetails = user.cleanUser()
+
+        delete nurse, user
+
+        res.status(200).send(appointment)
+    } catch (err) {
+        res.status(500).send({ message: "Internal Error" })
+    }
+}
+
+
+
+module.exports = { getAllNurses, bookAppointment, getPendingAppointmentsForUser, confirmAppointmentStatus, completeAppointment, getAppointmentDetailsById }

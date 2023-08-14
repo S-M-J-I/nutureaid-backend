@@ -15,9 +15,9 @@ const userSignup = async (req, res, next) => {
 
         console.log("HERE")
 
-        res.status(201).send({ message: "success" })
+        res.status(201).send({ message: "Success" })
     } catch (err) {
-        res.status(500).send({ message: "internal error" })
+        res.status(500).send({ message: "Internal Error" })
     }
 }
 
@@ -109,7 +109,7 @@ const fetchUserDetailsApiMethod = async (req, res, next) => {
 const getUserDetails = async (uid, type, exclusions = []) => {
     try {
 
-        const user = (type === "none") ? await User.findOne({ uid }) : await User.findOne({ uid, type })
+        const user = (type === "none") ? await User.findOne({ uid }).select() : await User.findOne({ uid, type })
 
         if (!user) {
             res.status(404).send({ message: "Not Found user details" })

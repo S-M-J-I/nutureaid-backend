@@ -24,7 +24,7 @@ function AbstractEntitySchema() {
         avatar: { type: String, trim: true, },
         rating: { type: Number, default: 0.00 },
         ongoingAppointment: { type: Boolean, default: false },
-        ongoingAppointmentID: { type: String, trim: true, default: "none" }
+        ongoingAppointmentID: { type: String, trim: true, default: "none" },
     });
 };
 util.inherits(AbstractEntitySchema, Schema);
@@ -44,9 +44,15 @@ const UserSchema = new AbstractEntitySchema({
         }
     },
     is_verified: { type: Boolean, default: false },
+    specialities: [{
+        type: String,
+        trim: true
+    }],
     tokens: [{
         token: { type: String, required: true, trim: true }
-    }]
+    }],
+    in_circle: { type: Boolean, default: false },
+    circleId: { type: String, default: "none", trim: true }
 }, { timestamps: true })
 
 UserSchema.methods.cleanUser = function (exclusions = []) {
@@ -63,12 +69,15 @@ UserSchema.methods.cleanUser = function (exclusions = []) {
     delete userObject.tokens
     delete userObject.__V
 
+    if (userObject.type === "user") {
+        delete userObject.specialities
+    }
 
     if (exclusions.length === 0) {
         return userObject
     }
 
-    for (let param in exclusions) {
+    for (let param of exclusions) {
         delete userObject[param]
     }
 
@@ -98,32 +107,6 @@ UserSchema.pre('save', async function (next) {
 
     next()
 })
-
-
-const NurseSchema = new AbstractEntitySchema({
-    email: { type: String, trim: true, unique: [true, "Email must be unique"], required: true, },
-    password: {
-        type: String,
-        trim: true,
-        unique: true,
-        required: true,
-        minlenght: 7,
-        validate(value) {
-            if (value.length < 6) {
-                throw new Error("Password is less than 7 characters!")
-            }
-        }
-    },
-    is_verified: { type: Boolean, default: false },
-    specialities: [{
-        type: String,
-        trim: true
-    }],
-    tokens: [{
-        token: { type: String, required: true }
-    }]
-}, { timestamps: true })
-
 
 // * ALL THE SCHEMAS
 const User = mongoose.model('User', UserSchema)

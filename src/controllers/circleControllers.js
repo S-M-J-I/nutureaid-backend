@@ -1,8 +1,8 @@
-import { User } from "../models/User"
+const User = require("../models/User")
 
 const Circle = require("../models/Circle")
 
-export const createCircle = async (req, res, next) => {
+const createCircle = async (req, res, next) => {
     try {
         const circle = new Circle(req.body)
         await circle.save()
@@ -25,7 +25,7 @@ export const createCircle = async (req, res, next) => {
 }
 
 
-export const joinCircle = async (req, res, next) => {
+const joinCircle = async (req, res, next) => {
     const circle_id = req.params.id
 
     try {
@@ -53,3 +53,5 @@ export const joinCircle = async (req, res, next) => {
         res.status(500).send(err)
     }
 }
+
+module.exports = { joinCircle, createCircle }

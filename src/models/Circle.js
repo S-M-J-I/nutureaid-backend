@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const { User } = require('./User')
-const { generateCode } = require('../functions/utils')
+const User = require('./User')
+const { generateCode } = require('../controllers/utils')
 
 const CircleSchema = mongoose.Schema({
     circle_owner: {

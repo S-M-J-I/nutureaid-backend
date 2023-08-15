@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: true }))
 const user_routes = require('./src/routes/userRoutes')
 const appointment_routes = require('./src/routes/appointmentRoutes')
 const circle_routes = require('./src/routes/circleRoutes')
+const medicine_routes = require('./src/routes/medicineTaskRoutes')
 
 
 
@@ -28,6 +29,8 @@ const circle_routes = require('./src/routes/circleRoutes')
 app.use('/api/auth/user/', user_routes)
 app.use('/api/auth/appointment/', appointment_routes)
 app.use('/api/auth/circle/', circle_routes)
+app.use('/api/auth/medicine_tasks/', medicine_routes)
+
 
 app.use('*', (req, res, next) => {
     res.status(404).send({ message: "Resource Not Found" })

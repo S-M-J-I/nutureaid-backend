@@ -65,7 +65,6 @@ UserSchema.methods.cleanUser = function (exclusions = []) {
     delete userObject.createdAt
     delete userObject.updatedAt
     delete userObject.timestamp
-    delete userObject._id
     delete userObject.tokens
     delete userObject.__V
 

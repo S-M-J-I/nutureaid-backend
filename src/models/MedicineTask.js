@@ -22,7 +22,7 @@ const MedicineTaskSchema = mongoose.Schema({
     given_to: {
         type: String,
     }
-})
+}, { timestamps: true })
 
 
 const MedicineTask = mongoose.model('MedicineTask', MedicineTaskSchema)

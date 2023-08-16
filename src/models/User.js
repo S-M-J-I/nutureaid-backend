@@ -25,6 +25,7 @@ function AbstractEntitySchema() {
         rating: { type: Number, default: 0.00 },
         ongoingAppointment: { type: Boolean, default: false },
         ongoingAppointmentID: { type: String, trim: true, default: "none" },
+        onboarding: { type: Boolean, default: true }
     });
 };
 util.inherits(AbstractEntitySchema, Schema);
@@ -49,7 +50,7 @@ const UserSchema = new AbstractEntitySchema({
         trim: true
     }],
     tokens: [{
-        token: { type: String, required: true, trim: true }
+        token: { type: String, trim: true }
     }],
     in_circle: { type: Boolean, default: false },
     circleId: { type: String, default: "none", trim: true }

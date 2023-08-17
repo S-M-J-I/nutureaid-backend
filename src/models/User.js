@@ -17,6 +17,7 @@ function AbstractEntitySchema() {
         biography: { type: String, trim: true, },
         type: { type: String, trim: true, default: "unset" },
         blood_group: { type: String, trim: true, },
+        age: { type: Number, default: 0, },
         gender: { type: String, trim: true },
         phone: { type: String, trim: true },
         address: { type: String, trim: true },
@@ -45,6 +46,7 @@ const UserSchema = new AbstractEntitySchema({
         }
     },
     is_verified: { type: Boolean, default: false },
+    verification_status: { type: String, default: "pending" }, // pending => ongoing => rejected / accepted
     specialities: [{
         type: String,
         trim: true

@@ -13,8 +13,6 @@ const userSignup = async (req, res, next) => {
 
         await user.save()
 
-        console.log("HERE")
-
         res.status(201).send({ message: "Success" })
     } catch (err) {
         res.status(500).send({ message: "Internal Error" })
@@ -51,6 +49,22 @@ const userLogin = async (req, res, next) => {
 
         res.status(200).send(user.cleanUser())
 
+    } catch (err) {
+        res.status(500).send(err)
+    }
+}
+
+
+const setAccountDetail = async (req, res, next) => {
+    try {
+        const user = await User.findOne({ uid: req.body.uid })
+        const key = req.body.key
+
+        user[key] = req.body[key]
+
+        await user.save()
+
+        res.status(200).send(user.cleanUser())
     } catch (err) {
         res.status(500).send(err)
     }
@@ -128,6 +142,7 @@ const getUserDetails = async (uid, type, exclusions = []) => {
 module.exports = {
     userSignup,
     userLogin,
+    setAccountDetail,
     userLogout,
     getUserDetails,
     fetchUserDetailsApiMethod,

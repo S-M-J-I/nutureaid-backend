@@ -141,11 +141,31 @@ const getUserDetails = async (uid, type, exclusions = []) => {
 
 const saveVerification = async (req, res, next) => {
     try {
-        console.log(req.file)
-        // const verification = new Verification({
-        //     user: req.params.id,
+        const user_id = req.params.id
+        const user = await User.findOne({ uid: user_id }).select({ verification_status: 1, type: 1 })
 
-        // })
+        const file_path_1 = req.files[0].path
+        const file_path_2 = req.files[1].path
+        let resume_path = undefined
+        if (req.files[2].path) {
+            resume_path = req.files[2].path
+        }
+
+        const verification = new Verification({
+            user: user_id,
+            user_type: user.type,
+            file_path_1,
+            file_path_2,
+        })
+
+        if (resume_path) {
+            verification.resume_path = resume_path
+        }
+
+        user.verification_status = "ongoing"
+
+        await Promise.all([verification.save(), user.save()])
+
         res.status(200).send({ message: "Applied for verification" })
     } catch (err) {
         res.status(500).send({ message: "Internal Error" })

@@ -31,6 +31,7 @@ router.post(
   uploadFiles.single("file"),
   async (req, res, next) => {
     const file = req.file;
+    console.log(req.body)
     if (!file) {
       res.status(404).send({ message: "File Not Found " });
       return;
@@ -39,7 +40,7 @@ router.post(
       const user_id = req.params.id;
       console.log(file);
       console.log(user_id);
-      const file_ext = file.mimetype.split("/")[1];
+      const file_ext = file.originalname.includes("pdf") ? "pdf" : "jpg"
       const file_name = file.originalname;
       const file_path = `reports/${file.filename}`;
       const report = new Report({
@@ -58,7 +59,7 @@ router.post(
 
 router.get("/get", checkAuth, async (req, res, next) => {
   try {
-    const reports = await Report.find({ user_id: req.body.uid }).lean();
+    const reports = await Report.find({ user_id: req.body.uid }).sort({ "_id": -1 }).lean();
     // console.log(reports);
     res.status(200).send(reports);
   } catch (error) {

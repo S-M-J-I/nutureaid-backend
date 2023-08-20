@@ -1,4 +1,5 @@
 const { User } = require('../models/User')
+const Verification = require('../models/Verification')
 
 /**
  * Make a user entry into the database
@@ -138,6 +139,20 @@ const getUserDetails = async (uid, type, exclusions = []) => {
 }
 
 
+const saveVerification = async (req, res, next) => {
+    try {
+        console.log(req.file)
+        // const verification = new Verification({
+        //     user: req.params.id,
+
+        // })
+        res.status(200).send({ message: "Applied for verification" })
+    } catch (err) {
+        res.status(500).send({ message: "Internal Error" })
+    }
+}
+
+
 
 module.exports = {
     userSignup,
@@ -146,5 +161,5 @@ module.exports = {
     userLogout,
     getUserDetails,
     fetchUserDetailsApiMethod,
-    // fetchUserDetailsAndAppointmentStatus
+    saveVerification
 }

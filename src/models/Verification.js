@@ -5,6 +5,10 @@ const verificationSchema = mongoose.Schema({
         type: String,
         trim: true
     },
+    user_type: {
+        type: String,
+        trim: true
+    },
     file_path_1: {
         type: String,
         trim: true
@@ -13,6 +17,10 @@ const verificationSchema = mongoose.Schema({
         type: String,
         trim: true
     },
+    resume_path: {
+        type: String,
+        trim: true
+    }
 }, {
     timestamp: true
 })

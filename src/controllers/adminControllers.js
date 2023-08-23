@@ -7,20 +7,23 @@ const getAllPendingVerifications = async (req, res, next) => {
         const user_type = req.params.type
         const verifications = await Verification.find({ user_type }).lean()
 
-        verifications.forEach(await Promise.all(async (element) => {
-            try {
-                const responseUser = await User.find({ uid: verifications.user }).select({ fullname: 1, email: 1, phone: 1, type: 1 }).lean()
-                return {
-                    ...element,
-                    ...responseUser
+        let responseVerifications = [];
+        if (verifications.length > 0) {
+            responseVerifications = await Promise.all(verifications.map(async (element) => {
+                try {
+                    const responseUser = await User.find({ uid: verifications.user }).select({ fullname: 1, email: 1, phone: 1, type: 1 }).lean()
+                    return {
+                        ...element,
+                        ...responseUser
+                    }
+                } catch (err) {
+                    // handle error 
+                    res.status(404).send({ message: "Not Found" })
                 }
-            } catch (err) {
-                // handle error 
-                res.status(404).send({ message: "Not Found" })
-            }
-        }))
+            }))
+        }
 
-        res.status(200).send(verifications)
+        res.status(200).send(responseVerifications)
     } catch (err) {
         res.status(500).send({ message: "Internal Error" })
     }

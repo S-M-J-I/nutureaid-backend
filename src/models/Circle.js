@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const User = require('./User')
 const { generateCode } = require('../controllers/utils')
 
 const CircleSchema = mongoose.Schema({
@@ -7,6 +6,10 @@ const CircleSchema = mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+    },
+    circle_name: {
+        type: String,
+        trim: true
     },
     circle_members: [{
         type: String,

@@ -20,6 +20,7 @@ const circle_routes = require("./src/routes/circleRoutes");
 const medicine_routes = require("./src/routes/medicineTaskRoutes");
 const report_routes = require("./src/routes/reportRoutes");
 const verification_routes = require("./src/routes/verificationRoutes")
+const payment_routes = require("./src/routes/paymentRoutes")
 
 // * AUTH SERVICE ROUTES
 
@@ -29,6 +30,7 @@ app.use("/api/auth/circle/", circle_routes);
 app.use("/api/auth/medicine_tasks/", medicine_routes);
 app.use("/api/auth/reports/", report_routes);
 app.use("/api/auth/verification/", verification_routes)
+app.use("/api/auth/payment/", payment_routes)
 
 app.use("*", (req, res, next) => {
   res.status(404).send({ message: "Resource Not Found" });

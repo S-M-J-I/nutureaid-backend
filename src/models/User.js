@@ -26,7 +26,8 @@ function AbstractEntitySchema() {
         rating: { type: Number, default: 0.00 },
         ongoingAppointment: { type: Boolean, default: false },
         ongoingAppointmentID: { type: String, trim: true, default: "none" },
-        onboarding: { type: Boolean, default: true }
+        onboarding: { type: Boolean, default: true },
+        ongoingAppointmentStatus: { type: String, default: "none" }
     });
 };
 util.inherits(AbstractEntitySchema, Schema);

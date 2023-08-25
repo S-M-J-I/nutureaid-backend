@@ -8,5 +8,4 @@ router.get("/get-details/:id", admin_controllers.getVerificationDetailsOfUser)
 router.get("/get-file/:id/:choice", admin_controllers.getFileByIdAndChoice)
 router.post("/update/:id", admin_controllers.changeVerificationStatus)
 
-
 module.exports = router

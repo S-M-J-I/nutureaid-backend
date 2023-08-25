@@ -1,13 +1,23 @@
 const Appointment = require("../models/Appointment")
 const { User } = require("../models/User")
 const { getUserDetails } = require("./userController")
+const { makeImgToBuffer64 } = require("./utils")
 
 const getAllNurses = async (req, res, next) => {
     try {
-        const nurses = await User.find({ type: "nurse" })
+        const nurses = await User.find({ type: "nurse" }).select("-tokens -password")
 
-        res.status(200).send(nurses)
+        const responseObj = nurses.map(nurse => {
+            if (nurse.avatar) {
+                const avatar_buffer = makeImgToBuffer64(nurse.avatar)
+                nurse.avatar = avatar_buffer
+            }
+            return nurse
+        })
+
+        res.status(200).send(responseObj)
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal server error" })
     }
 }
@@ -25,11 +35,14 @@ const getPendingAppointmentsForUser = async (req, res, next) => {
             "user": user_query_options
         }
 
+
         let pending = await Appointment.find({ approved: false, rejected: false, ...options[type] }).lean()
         pending = await Promise.all(pending.map(async (item) => {
             try {
                 const queryer_type = type === "nurse" ? item.booked_by : item.booked_nurse
                 const responseUser = await getUserDetails(queryer_type, "none", ["is_verified", "rewards"])
+                // const avatar_buffer = makeImgToBuffer64(responseUser.avatar)
+                // responseUser.avatar = avatar_buffer
                 return {
                     appointment_details: item,
                     responseUser
@@ -39,8 +52,6 @@ const getPendingAppointmentsForUser = async (req, res, next) => {
                 console.log(err)
             }
         }))
-
-        // console.log(pending)
 
         res.status(200).send(pending)
     } catch (err) {

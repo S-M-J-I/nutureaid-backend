@@ -1,5 +1,8 @@
 const { User } = require('../models/User')
 const Verification = require('../models/Verification')
+const sharp = require('sharp')
+const fs = require('fs')
+const { makeImgToBuffer64 } = require('./utils')
 
 /**
  * Make a user entry into the database
@@ -105,7 +108,7 @@ const userLogout = async (req, res, next) => {
 const fetchUserDetailsApiMethod = async (req, res, next) => {
     try {
 
-        const uid = req.body.uid
+        const uid = req.params.id
         const user = await User.findOne({ uid })
 
 
@@ -113,9 +116,14 @@ const fetchUserDetailsApiMethod = async (req, res, next) => {
             res.status(404).send({ message: "Not Found User" })
         }
 
+        if (user.avatar) {
+            const avatar_buffer = makeImgToBuffer64(user.avatar)
+            user.avatar = avatar_buffer
+        }
 
         res.status(200).send(user.cleanUser())
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal Server Error" })
     }
 }
@@ -173,6 +181,30 @@ const saveVerification = async (req, res, next) => {
 }
 
 
+const uploadAvatar = async (req, res, next) => {
+    try {
+        const user_id = req.params.id
+
+        const originalFilePath = req.file.path
+        let path = req.file.path.split("\\")
+        let filename = path.pop()
+        path = path.join("\\")
+        const composed_path = `${path}\\cropped-${filename}.jpeg`
+
+        const file = await sharp(req.file.path).resize({ width: 300, height: 300 }).toFormat("jpeg", { mozjpeg: true }).toFile(composed_path)
+
+        fs.unlinkSync(originalFilePath)
+
+        await User.findOneAndUpdate({ uid: user_id }, { avatar: composed_path })
+
+        res.status(200).send({ message: "Saved" })
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ message: "Internal Error" })
+    }
+}
+
+
 
 module.exports = {
     userSignup,
@@ -181,5 +213,6 @@ module.exports = {
     userLogout,
     getUserDetails,
     fetchUserDetailsApiMethod,
-    saveVerification
+    saveVerification,
+    uploadAvatar
 }

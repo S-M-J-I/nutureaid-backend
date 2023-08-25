@@ -7,6 +7,7 @@ const { checkAuth } = require('../middlewares/authMiddleware')
 
 router.post('/book/:id', checkAuth, appointment_controller.bookAppointment)
 router.post('/booking-status/:id', checkAuth, appointment_controller.confirmAppointmentStatus)
+router.post('/set-closure/:id', checkAuth, appointment_controller.setAppointmentForClosure)
 router.post('/complete-booking/:id', checkAuth, appointment_controller.completeAppointment)
 router.get('/get-nurses', checkAuth, appointment_controller.getAllNurses)
 router.get('/get-appointment/:id', checkAuth, appointment_controller.getAppointmentDetailsById)

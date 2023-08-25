@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 function generateCode() {
     var characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     var code = '';
@@ -15,4 +17,11 @@ function generateCode() {
 }
 
 
-module.exports = { generateCode }
+function makeImgToBuffer64(img_path) {
+    const buffer = fs.readFileSync(img_path)
+    const base64 = buffer.toString("base64")
+    return base64
+}
+
+
+module.exports = { generateCode, makeImgToBuffer64 }

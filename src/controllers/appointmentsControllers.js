@@ -1,13 +1,23 @@
 const Appointment = require("../models/Appointment")
 const { User } = require("../models/User")
 const { getUserDetails } = require("./userController")
+const { makeImgToBuffer64 } = require("./utils")
 
 const getAllNurses = async (req, res, next) => {
     try {
-        const nurses = await User.find({ type: "nurse" })
+        const nurses = await User.find({ type: "nurse" }).select("-tokens -password")
 
-        res.status(200).send(nurses)
+        const responseObj = nurses.map(nurse => {
+            if (nurse.avatar) {
+                const avatar_buffer = makeImgToBuffer64(nurse.avatar)
+                nurse.avatar = avatar_buffer
+            }
+            return nurse
+        })
+
+        res.status(200).send(responseObj)
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal server error" })
     }
 }
@@ -25,21 +35,23 @@ const getPendingAppointmentsForUser = async (req, res, next) => {
             "user": user_query_options
         }
 
+
         let pending = await Appointment.find({ approved: false, rejected: false, ...options[type] }).lean()
         pending = await Promise.all(pending.map(async (item) => {
             try {
                 const queryer_type = type === "nurse" ? item.booked_by : item.booked_nurse
                 const responseUser = await getUserDetails(queryer_type, "none", ["is_verified", "rewards"])
+                // const avatar_buffer = makeImgToBuffer64(responseUser.avatar)
+                // responseUser.avatar = avatar_buffer
                 return {
                     appointment_details: item,
                     responseUser
                 }
             } catch (err) {
                 // handle error 
+                console.log(err)
             }
         }))
-
-        // console.log(pending)
 
         res.status(200).send(pending)
     } catch (err) {
@@ -71,6 +83,7 @@ const bookAppointment = async (req, res, next) => {
         res.status(201).send({ message: "Success" })
 
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal server error" })
     }
 }
@@ -144,6 +157,32 @@ const completeAppointment = async (req, res, next) => {
 }
 
 
+const setAppointmentForClosure = async (req, res, next) => {
+    try {
+        const nurse_uid = req.body.uid
+        const appointment_id = req.params.id
+
+        const [appointment, user, nurse] = await Promise.all([
+            Appointment.findOne({ _id: appointment_id }).select({ ongoing: 1 }),
+            User.findOne({ ongoingAppointmentID: appointment_id, type: "user" }).select({ ongoingAppointmentStatus: 1, ongoingAppointment: 1 }),
+            User.findOne({ uid: nurse_uid }).select({ ongoingAppointmentStatus: 1, ongoingAppointment: 1 }),
+        ])
+
+        appointment.ongoing = false
+        user.ongoingAppointment = false
+        nurse.ongoingAppointment = false
+        user.ongoingAppointmentStatus = "pending"
+        nurse.ongoingAppointmentStatus = "pending"
+
+        await Promise.all([appointment.save(), user.save(), nurse.save()])
+
+        return res.status(200).send({ message: "Success" })
+    } catch (err) {
+        res.status(500).send({ message: "Error" })
+    }
+}
+
+
 const getAppointmentDetailsById = async (req, res, next) => {
     try {
         const appointment_id = req.params.id
@@ -184,4 +223,12 @@ const getAppointmentDetailsById = async (req, res, next) => {
 
 
 
-module.exports = { getAllNurses, bookAppointment, getPendingAppointmentsForUser, confirmAppointmentStatus, completeAppointment, getAppointmentDetailsById }
+module.exports = {
+    getAllNurses,
+    bookAppointment,
+    getPendingAppointmentsForUser,
+    confirmAppointmentStatus,
+    completeAppointment,
+    getAppointmentDetailsById,
+    setAppointmentForClosure
+}

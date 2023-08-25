@@ -65,7 +65,7 @@ const joinCircle = async (req, res, next) => {
 const getCircleById = async (req, res, next) => {
     const circle_id = req.params.id
     try {
-        const circle = await Circle.findOne({ _id: circle_id }).select({ circle_members: 1 }).lean()
+        const circle = await Circle.findOne({ _id: circle_id }).select({ circle_members: 1, circle_code: 1 }).lean()
         const members_by_uid = circle.circle_members
 
         let members = [];

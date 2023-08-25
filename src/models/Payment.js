@@ -1,6 +1,12 @@
 const mongoose = require('mongoose')
 
 const paymentSchema = mongoose.Schema({
+    payed_by: {
+        type: String
+    },
+    payed_to: {
+        type: String
+    },
     train_id: {
         type: String
     },

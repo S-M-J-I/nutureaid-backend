@@ -8,11 +8,12 @@ const { User } = require('../models/User')
 const Payment = require('../models/Payment')
 const store_id = process.env.STORE_ID
 const store_passwd = process.env.STORE_PASS
-const is_live = false //true for live, false for sandbox
+const is_live = false
 
 
-router.post('/success', async (req, res) => {
+router.post('/success/:id', async (req, res, next) => {
     try {
+
         const paymentBody = {
             train_id,
             val_id,
@@ -24,14 +25,39 @@ router.post('/success', async (req, res) => {
             card_issuer,
             card_brand
         } = req.body
-        const payment = new Payment(
-            paymentBody
-        )
 
-        await payment.save()
+        const payment = new Payment({
+            ...paymentBody
+        })
+
+        const appointment_id = req.params.id
+
+        const appointment = await Appointment.findOne({ _id: appointment_id }).select({ booked_by: 1, booked_to: 1, completed: 1 })
+
+        const [user, nurse] = await Promise.all([
+            await User.findOne({ uid: appointment.booked_by, type: "user" }).select({ ongoingAppointmentID: 1, ongoingAppointment: 1, ongoingAppointmentStatus: 1 }),
+            await User.findOne({ uid: appointment.booked_to, type: "nurse" }).select({ ongoingAppointmentID: 1, ongoingAppointment: 1, ongoingAppointmentStatus: 1 })
+        ])
+
+
+        payment.payed_by = appointment.booked_by
+        payment.payed_to = appointment.booked_to
+
+        user.ongoingAppointmentID = "none"
+        user.ongoingAppointment = false
+        user.ongoingAppointmentStatus = "none"
+
+        nurse.ongoingAppointmentID = "none"
+        nurse.ongoingAppointment = false
+        nurse.ongoingAppointmentStatus = "none"
+
+        appointment.completed = true
+
+        await Promise.all([payment.save(), appointment.save(), user.save(), nurse.save()])
+
         res.status(200).send("Payed! Return to App")
     } catch (err) {
-
+        res.status(200).send({ message: "Internal Error" })
     }
 })
 
@@ -59,7 +85,7 @@ router.get('/init', checkAuth, async (req, res) => {
             total_amount: appointment.cost,
             currency: 'BDT',
             tran_id: `${appointment._id}`, // use unique tran_id for each api call
-            success_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/success`,
+            success_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/success/${appointment._id}`,
             fail_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/fail`,
             cancel_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/cancel`,
             ipn_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/ipn`,
@@ -91,11 +117,11 @@ router.get('/init', checkAuth, async (req, res) => {
             // Redirect the user to payment gateway
             // console.log(apiResponse)
             let GatewayPageURL = apiResponse.GatewayPageURL
-            console.log(apiResponse)
             res.status(200).send({ url: GatewayPageURL })
             console.log('Redirecting to: ', GatewayPageURL)
         });
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal Error" })
     }
 

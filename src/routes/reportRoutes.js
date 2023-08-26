@@ -67,4 +67,15 @@ router.get("/get", checkAuth, async (req, res, next) => {
   }
 });
 
+
+router.get("/get-all/:id", async (req, res, next) => {
+  try {
+    const reports = await Report.find({ _id: req.params.id }).sort({ "_id": -1 }).lean()
+    // console.log(reports);
+    res.status(200).send(reports);
+  } catch (error) {
+    res.status(500).send({ message: "Internal Error" });
+  }
+});
+
 module.exports = router;

@@ -23,5 +23,11 @@ function makeImgToBuffer64(img_path) {
     return base64
 }
 
+function makePdfToBinary(pdf_path) {
+    const buffer = fs.readFileSync(pdf_path)
+    const binary = buffer.toString("binary")
+    return binary
+}
 
-module.exports = { generateCode, makeImgToBuffer64 }
+
+module.exports = { generateCode, makeImgToBuffer64, makePdfToBinary }

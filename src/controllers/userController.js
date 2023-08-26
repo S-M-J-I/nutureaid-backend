@@ -13,12 +13,15 @@ const { makeImgToBuffer64 } = require('./utils')
  */
 const userSignup = async (req, res, next) => {
     try {
-        const user = new User(req.body)
+        const user = await User.create(req.body)
 
-        await user.save()
+        // console.log(user)
+
+        // await user.save()
 
         res.status(201).send({ message: "Success" })
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal Error" })
     }
 }

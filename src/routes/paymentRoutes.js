@@ -32,16 +32,16 @@ router.post('/success/:id', async (req, res, next) => {
 
         const appointment_id = req.params.id
 
-        const appointment = await Appointment.findOne({ _id: appointment_id }).select({ booked_by: 1, booked_to: 1, completed: 1 })
+        const appointment = await Appointment.findOne({ _id: appointment_id }).select({ booked_by: 1, booked_nurse: 1, completed: 1 })
 
         const [user, nurse] = await Promise.all([
-            await User.findOne({ uid: appointment.booked_by, type: "user" }).select({ ongoingAppointmentID: 1, ongoingAppointment: 1, ongoingAppointmentStatus: 1 }),
-            await User.findOne({ uid: appointment.booked_to, type: "nurse" }).select({ ongoingAppointmentID: 1, ongoingAppointment: 1, ongoingAppointmentStatus: 1 })
+            await User.findOne({ uid: appointment.booked_by }).select({ ongoingAppointmentID: 1, ongoingAppointment: 1, ongoingAppointmentStatus: 1 }),
+            await User.findOne({ uid: appointment.booked_nurse }).select({ ongoingAppointmentID: 1, ongoingAppointment: 1, ongoingAppointmentStatus: 1 })
         ])
 
 
         payment.payed_by = appointment.booked_by
-        payment.payed_to = appointment.booked_to
+        payment.payed_to = appointment.booked_nurse
 
         user.ongoingAppointmentID = "none"
         user.ongoingAppointment = false

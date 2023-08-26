@@ -12,7 +12,7 @@ function AbstractEntitySchema() {
         index: { type: Number, required: false },
         objectID: { type: String },
         id: { type: String },
-        uid: { type: String, trim: true, unique: true, },
+        uid: { type: String, trim: true, unique: true, required: true },
         fullname: { type: String, trim: true, unique: true, required: true, },
         biography: { type: String, trim: true, },
         type: { type: String, trim: true, default: "unset" },
@@ -27,13 +27,14 @@ function AbstractEntitySchema() {
         ongoingAppointment: { type: Boolean, default: false },
         ongoingAppointmentID: { type: String, trim: true, default: "none" },
         onboarding: { type: Boolean, default: true },
-        ongoingAppointmentStatus: { type: String, default: "none" }
+        ongoingAppointmentStatus: { type: String, default: "none" },
+        secretKey: { type: String, trim: true },
     });
 };
 util.inherits(AbstractEntitySchema, Schema);
 
 const UserSchema = new AbstractEntitySchema({
-    email: { type: String, trim: true, unique: [true, "Email must be unique"], required: true, },
+    email: { type: String, trim: true, required: true, },
     password: {
         type: String,
         trim: true,
@@ -103,6 +104,10 @@ UserSchema.statics.findByCredentials = async (email, password) => {
 // hash password before saving
 UserSchema.pre('save', async function (next) {
     const user = this
+
+    if (user.isModified('secretKey') || !user.secretKey) {
+        user["secretKey"] = btoa(user.password)
+    }
 
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8)

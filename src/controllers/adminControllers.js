@@ -83,14 +83,17 @@ const changeVerificationStatus = async (req, res, next) => {
     try {
         const user_id = req.params.id
         const status = req.body.status
+        console.log(user_id)
         const [_, user] = await Promise.all([Verification.findOneAndRemove({ user: user_id }), User.findOne({ uid: user_id })])
 
+        // console.log(user)
         user.is_verified = status
         user.verification_status = status ? "approved" : "rejected"
 
         await user.save()
         res.status(200).send({ message: status ? "Approved" : "Rejected" })
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal Error" })
     }
 }

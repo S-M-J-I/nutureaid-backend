@@ -75,8 +75,11 @@ router.get("/get-all/:id", async (req, res, next) => {
     // console.log(reports);
 
     let reportsObj = reports.map(element => {
-      const file = makeImgToBuffer64(element.file_path)
-      element.file_path = file
+      if (fs.existsSync(element.file_path)) {
+        const file = makeImgToBuffer64(element.file_path)
+        element.file_path = file
+      }
+      return element
     })
 
     res.status(200).send(reportsObj);

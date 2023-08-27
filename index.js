@@ -25,6 +25,7 @@ const review_routes = require("./src/routes/reviewRoutes")
 
 // * AUTH SERVICE ROUTES
 
+
 app.use("/api/auth/user/", user_routes);
 app.use("/api/auth/appointment/", appointment_routes);
 app.use("/api/auth/circle/", circle_routes);

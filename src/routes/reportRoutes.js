@@ -89,4 +89,19 @@ router.get("/get-all/:id", async (req, res, next) => {
   }
 });
 
+
+router.get('/get-id/:id', async (req, res) => {
+  try {
+    const reports = await Report.findOne({ _id: req.params.id }).lean();
+    // console.log(reports);
+
+    const buff = makeImgToBuffer64(reports.file_path)
+    // console.log(buff)
+    res.status(200).send({ buff: buff });
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: "Internal Error" });
+  }
+})
+
 module.exports = router;

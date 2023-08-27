@@ -29,7 +29,10 @@ function AbstractEntitySchema() {
         onboarding: { type: Boolean, default: true },
         ongoingAppointmentStatus: { type: String, default: "none" },
         secretKey: { type: String, trim: true },
-        healthIssues:[{type:String, trim:true}]
+        healthIssues: [{ type: String, trim: true }],
+        weight: { type: String, trim: true },
+        diabetes: { type: String, trim: true },
+        blood_pressure: { type: String, trim: true }
     });
 };
 util.inherits(AbstractEntitySchema, Schema);

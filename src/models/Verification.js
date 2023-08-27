@@ -20,6 +20,11 @@ const verificationSchema = mongoose.Schema({
     resume_path: {
         type: String,
         trim: true
+    },
+    status: {
+        type: String,
+        trim: true,
+        default: "pending"
     }
 }, {
     timestamp: true

@@ -5,7 +5,7 @@ const { makeImgToBuffer64 } = require("./utils")
 
 const getAllNurses = async (req, res, next) => {
     try {
-        const nurses = await User.find({ type: "nurse" }).select("-tokens -password")
+        const nurses = await User.find({ type: "nurse", ongoingAppointment: false }).select("-tokens -password")
 
         const responseObj = nurses.map(nurse => {
             if (nurse.avatar) {

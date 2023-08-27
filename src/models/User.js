@@ -29,6 +29,7 @@ function AbstractEntitySchema() {
         onboarding: { type: Boolean, default: true },
         ongoingAppointmentStatus: { type: String, default: "none" },
         secretKey: { type: String, trim: true },
+        healthIssues:[{type:String, trim:true}]
     });
 };
 util.inherits(AbstractEntitySchema, Schema);

@@ -3,6 +3,7 @@ const Verification = require('../models/Verification')
 const sharp = require('sharp')
 const fs = require('fs')
 const { makeImgToBuffer64 } = require('./utils')
+const path = require('path')
 
 /**
  * Make a user entry into the database
@@ -155,10 +156,11 @@ const saveVerification = async (req, res, next) => {
         const user_id = req.params.id
         const user = await User.findOne({ uid: user_id }).select({ verification_status: 1, type: 1 })
 
+        console.log(req.files)
         const file_path_1 = req.files[0].path
         const file_path_2 = req.files[1].path
         let resume_path = undefined
-        if (req.files[2].path) {
+        if (user.type === "nurse" && req.files[2].path) {
             resume_path = req.files[2].path
         }
 
@@ -179,6 +181,7 @@ const saveVerification = async (req, res, next) => {
 
         res.status(200).send({ message: "Applied for verification" })
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal Error" })
     }
 }

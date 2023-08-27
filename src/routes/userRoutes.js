@@ -60,6 +60,9 @@ router.post('/upload-avatar/:id', uploadAvatar.single('avatar'), user_controller
 router.post('/set-account-detail', checkAuth, user_controllers.setAccountDetail)
 router.post('/verification-send/:id', uploadVerification.array('files', 3), user_controllers.saveVerification)
 
+router.post('/set-health-issue/:id', user_controllers.setHealthIssue)
+router.post('/set-health-log/:id', user_controllers.setHealthLog)
+
 router.get('/get/:id', user_controllers.fetchUserDetailsApiMethod)
 
 router.post('/logout', checkAuth, user_controllers.userLogout)

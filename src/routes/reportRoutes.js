@@ -5,6 +5,7 @@ const fs = require("fs");
 const Report = require("../models/Report");
 const { checkAuth } = require("../middlewares/authMiddleware");
 const path = require("path");
+const { makeImgToBuffer64 } = require("../controllers/utils");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let dir = `reports/`; // specify the path you want to store file
@@ -70,12 +71,37 @@ router.get("/get", checkAuth, async (req, res, next) => {
 
 router.get("/get-all/:id", async (req, res, next) => {
   try {
-    const reports = await Report.find({ _id: req.params.id }).sort({ "_id": -1 }).lean()
+    const reports = await Report.find({ user_id: req.params.id }).sort({ "user_id": -1 }).lean()
     // console.log(reports);
-    res.status(200).send(reports);
+
+    let reportsObj = reports.map(element => {
+      if (fs.existsSync(element.file_path)) {
+        const file = makeImgToBuffer64(element.file_path)
+        element.file_path = file
+      }
+      return element
+    })
+
+    res.status(200).send(reportsObj);
   } catch (error) {
+    console.log(error)
     res.status(500).send({ message: "Internal Error" });
   }
 });
+
+
+router.get('/get-id/:id', async (req, res) => {
+  try {
+    const reports = await Report.findOne({ _id: req.params.id }).lean();
+    // console.log(reports);
+
+    const buff = makeImgToBuffer64(reports.file_path)
+    // console.log(buff)
+    res.status(200).send({ buff: buff });
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: "Internal Error" });
+  }
+})
 
 module.exports = router;

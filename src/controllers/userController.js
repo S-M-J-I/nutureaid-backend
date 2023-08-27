@@ -211,6 +211,54 @@ const uploadAvatar = async (req, res, next) => {
 }
 
 
+const setHealthIssue = async (req, res, next) => {
+    try {
+        const user_id = req.params.id
+        const user = await User.findById(user_id)
+        const issue = req.body.issue
+
+        if (!user) {
+            res.status(404).send({ message: "User not found" })
+            return
+        }
+
+        user.healthIssues = user.healthIssues.push(issue)
+
+        await user.save()
+
+        res.status(201).send(user)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ message: "Internal Error" })
+    }
+}
+
+
+const setHealthLog = async (req, res, next) => {
+    try {
+        const user_id = req.params.id
+        const user = await User.findById(user_id)
+        const key = req.body.key
+
+        // console.log(log)
+
+        if (!user) {
+            res.status(404).send({ message: "User not found" })
+            return
+        }
+
+        user.healthLogs = user.healthLogs.push(log)
+
+        await user.save()
+
+        res.status(201).send(user.cleanUser())
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ message: "Internal Error" })
+    }
+}
+
+
 
 module.exports = {
     userSignup,
@@ -220,5 +268,7 @@ module.exports = {
     getUserDetails,
     fetchUserDetailsApiMethod,
     saveVerification,
-    uploadAvatar
+    uploadAvatar,
+    setHealthIssue,
+    setHealthLog
 }

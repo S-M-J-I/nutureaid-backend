@@ -35,6 +35,7 @@ const getAllPendingVerifications = async (req, res, next) => {
                 } catch (err) {
                     // handle error 
                     res.status(404).send({ message: "Not Found" })
+                    return
                 }
             }))
         }

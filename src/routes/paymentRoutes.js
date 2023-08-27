@@ -65,7 +65,10 @@ router.post('/success/:id', async (req, res, next) => {
 
 //sslcommerz init
 router.get('/init', checkAuth, async (req, res) => {
+    console.log("here")
     try {
+
+        console.log(req.body)
 
         const user = await User.findOne({ uid: req.body.uid }).select({ ongoingAppointmentID: 1, fullname: 1, email: 1, phone: 1 }).lean()
 
@@ -113,12 +116,15 @@ router.get('/init', checkAuth, async (req, res) => {
         };
         const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
 
+        // console.log(sslcz)
+
         sslcz.init(data).then(apiResponse => {
             // Redirect the user to payment gateway
             // console.log(apiResponse)
             let GatewayPageURL = apiResponse.GatewayPageURL
+            // console.log(GatewayPageURL)
             res.status(200).send({ url: GatewayPageURL })
-            console.log('Redirecting to: ', GatewayPageURL)
+            // console.log('Redirecting to: ', GatewayPageURL)
         });
     } catch (err) {
         console.log(err)

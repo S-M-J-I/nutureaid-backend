@@ -193,8 +193,8 @@ const getAppointmentDetailsById = async (req, res, next) => {
             return
         }
 
-        const nurse_select_options = { email: 1, uid: 1, fullname: 1, gender: 1, phone: 1, address: 1, rating: 1, specialities: 1, blood_group: 1, }
-        const user_select_options = { email: 1, uid: 1, fullname: 1, blood_group: 1, gender: 1, phone: 1, address: 1, }
+        const nurse_select_options = { email: 1, uid: 1, fullname: 1, gender: 1, phone: 1, address: 1, rating: 1, specialities: 1, blood_group: 1, avatar: 1}
+        const user_select_options = { email: 1, uid: 1, fullname: 1, blood_group: 1, gender: 1, phone: 1, address: 1, avatar: 1}
 
         const [nurse, user] = await Promise.all([
             User.findOne({ uid: appointment.booked_nurse, type: "nurse" }).select(nurse_select_options),
@@ -210,13 +210,19 @@ const getAppointmentDetailsById = async (req, res, next) => {
         }
 
 
+        
+        
         appointment.nurseDetails = nurse.cleanUser()
         appointment.userDetails = user.cleanUser()
+        
+        appointment.nurseDetails.avatar = makeImgToBuffer64(appointment.nurseDetails.avatar)
+        appointment.userDetails.avatar = makeImgToBuffer64(appointment.userDetails.avatar)
 
         delete nurse, user
 
         res.status(200).send(appointment)
     } catch (err) {
+        console.log(err)
         res.status(500).send({ message: "Internal Error" })
     }
 }

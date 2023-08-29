@@ -6,7 +6,7 @@ const { makeImgToBuffer64, makePdfToBinary } = require("./utils")
 const getAllPendingVerifications = async (req, res, next) => {
     try {
         const user_type = req.params.type
-        const verifications = await Verification.find({ user_type }).lean()
+        const verifications = await Verification.find({ user_type, status: "pending" }).lean()
 
         let responseVerifications = [];
         if (verifications.length > 0) {
@@ -34,8 +34,8 @@ const getAllPendingVerifications = async (req, res, next) => {
                     return element
                 } catch (err) {
                     // handle error 
-                    res.status(404).send({ message: "Not Found" })
-                    return
+                    // res.status(404).send({ message: "Not Found" })
+                    // return
                 }
             }))
         }
@@ -85,13 +85,16 @@ const changeVerificationStatus = async (req, res, next) => {
         const user_id = req.params.id
         const status = req.body.status
         console.log(user_id)
-        const [_, user] = await Promise.all([Verification.findOneAndRemove({ user: user_id }), User.findOne({ uid: user_id })])
+        // const user = await User.findOne({ uid: user_id })
+        const [verification, user] = await Promise.all([Verification.findOne({ user: user_id }), User.findOne({ uid: user_id })])
 
         // console.log(user)
         user.is_verified = status
-        user.verification_status = status ? "approved" : "rejected"
+        user.verification_status = status ? "approved" : "none"
 
-        await user.save()
+        verification.status = status ? "approved" : "rejected"
+
+        await Promise.all([user.save(), verification.save()])
         res.status(200).send({ message: status ? "Approved" : "Rejected" })
     } catch (err) {
         console.log(err)

@@ -144,11 +144,13 @@ const completeAppointment = async (req, res, next) => {
         const nurse_uid = req.body.uid
         const appointment_id = req.params.id
 
-        const appointment = await Appointment.findOne({ _id: appointment_id })
+        const [appointment, nurse] = await Promise.all([Appointment.findOne({ _id: appointment_id }), User.findOne({ uid: nurse_uid })])
         appointment.ongoing = false
         appointment.completed = true
 
-        await appointment.save()
+        nurse.rewards += 20
+
+        await Promise.all([appointment.save(), nurse.save()])
 
         return res.status(200).send({ message: "Success" })
     } catch (err) {
@@ -193,8 +195,8 @@ const getAppointmentDetailsById = async (req, res, next) => {
             return
         }
 
-        const nurse_select_options = { email: 1, uid: 1, fullname: 1, gender: 1, phone: 1, address: 1, rating: 1, specialities: 1, blood_group: 1, avatar: 1}
-        const user_select_options = { email: 1, uid: 1, fullname: 1, blood_group: 1, gender: 1, phone: 1, address: 1, avatar: 1}
+        const nurse_select_options = { email: 1, uid: 1, fullname: 1, gender: 1, phone: 1, address: 1, rating: 1, specialities: 1, blood_group: 1, avatar: 1, }
+        const user_select_options = { email: 1, uid: 1, fullname: 1, blood_group: 1, gender: 1, phone: 1, address: 1, avatar: 1, weight: 1, blood_pressure: 1, diabetes: 1, }
 
         const [nurse, user] = await Promise.all([
             User.findOne({ uid: appointment.booked_nurse, type: "nurse" }).select(nurse_select_options),
@@ -210,11 +212,11 @@ const getAppointmentDetailsById = async (req, res, next) => {
         }
 
 
-        
-        
+
+
         appointment.nurseDetails = nurse.cleanUser()
         appointment.userDetails = user.cleanUser()
-        
+
         appointment.nurseDetails.avatar = makeImgToBuffer64(appointment.nurseDetails.avatar)
         appointment.userDetails.avatar = makeImgToBuffer64(appointment.userDetails.avatar)
 

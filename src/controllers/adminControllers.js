@@ -90,7 +90,7 @@ const changeVerificationStatus = async (req, res, next) => {
 
         // console.log(user)
         user.is_verified = status
-        user.verification_status = status ? "approved" : "rejected"
+        user.verification_status = status ? "approved" : "none"
 
         verification.status = status ? "approved" : "rejected"
 

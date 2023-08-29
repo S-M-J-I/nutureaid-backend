@@ -134,6 +134,107 @@ router.get('/init', checkAuth, async (req, res) => {
 })
 
 
+router.post('/success/book/:id', async (req, res, next) => {
+    try {
+
+        const paymentBody = {
+            train_id,
+            val_id,
+            amount,
+            card_type,
+            store_amount,
+            card_no,
+            bank_tran_id,
+            card_issuer,
+            card_brand
+        } = req.body
+
+        const payment = new Payment({
+            ...paymentBody
+        })
+
+        const user_id = req.params.id
+
+        const user = await User.findOne({ _id: user_id }).select({ rewards: 1 })
+
+
+        user.rewards -= 20
+
+        await Promise.all([payment.save(), user.save()])
+
+        res.status(200).send("Payed! Return to App")
+    } catch (err) {
+        res.status(200).send({ message: "Internal Error" })
+    }
+})
+
+
+
+
+router.get('/book-package/:price', checkAuth, async (req, res) => {
+    console.log("here")
+    try {
+
+        console.log(Number(req.params.price))
+
+        const user = await User.findOne({ uid: req.body.uid }).select({ fullname: 1, email: 1, phone: 1, rewards: 1 }).lean()
+
+        if (!user) {
+            res.status(404).send({ message: "User not found" })
+            return
+        }
+
+
+        const data = {
+            total_amount: parseInt(req.params.price),
+            currency: 'BDT',
+            tran_id: `dsfkjdskjfksdfdsfksdaf`, // use unique tran_id for each api call
+            success_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/success/book/${user._id}`,
+            fail_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/fail`,
+            cancel_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/cancel`,
+            ipn_url: `http://${process.env.LOCALHOST}:3000/api/auth/payment/ipn`,
+            shipping_method: 'Courier',
+            product_name: 'Package.',
+            product_category: 'Reward',
+            product_profile: 'general',
+            cus_name: user.fullname,
+            cus_email: user.email,
+            cus_add1: 'Dhaka',
+            cus_add2: 'Dhaka',
+            cus_city: 'Dhaka',
+            cus_state: 'Dhaka',
+            cus_postcode: '1000',
+            cus_country: 'Bangladesh',
+            cus_phone: user.phone,
+            cus_fax: '01711111111',
+            ship_name: 'Customer Name',
+            ship_add1: 'Dhaka',
+            ship_add2: 'Dhaka',
+            ship_city: 'Dhaka',
+            ship_state: 'Dhaka',
+            ship_postcode: 1000,
+            ship_country: 'Bangladesh',
+        };
+        const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
+
+        // console.log(sslcz)
+
+        sslcz.init(data).then(apiResponse => {
+            // Redirect the user to payment gateway
+            // console.log(apiResponse)
+            let GatewayPageURL = apiResponse.GatewayPageURL
+            // console.log(GatewayPageURL)
+            res.status(200).send({ url: GatewayPageURL })
+            // console.log('Redirecting to: ', GatewayPageURL)
+        });
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ message: "Internal Error" })
+    }
+
+})
+
+
 
 
 module.exports = router

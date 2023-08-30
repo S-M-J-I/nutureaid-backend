@@ -65,10 +65,9 @@ router.post('/success/:id', async (req, res, next) => {
 
 //sslcommerz init
 router.get('/init', checkAuth, async (req, res) => {
-    console.log("here")
+    // console.log("here")
     try {
 
-        console.log(req.body)
 
         const user = await User.findOne({ uid: req.body.uid }).select({ ongoingAppointmentID: 1, fullname: 1, email: 1, phone: 1 }).lean()
 
@@ -127,7 +126,7 @@ router.get('/init', checkAuth, async (req, res) => {
             // console.log('Redirecting to: ', GatewayPageURL)
         });
     } catch (err) {
-        console.log(err)
+        // console.log(err)
         res.status(500).send({ message: "Internal Error" })
     }
 
@@ -181,6 +180,11 @@ router.get('/book-package/:price', checkAuth, async (req, res) => {
 
         if (!user) {
             res.status(404).send({ message: "User not found" })
+            return
+        }
+
+        if (user.rewards <= 0) {
+            res.status(400).send({ message: "Not enough points" })
             return
         }
 

@@ -75,7 +75,7 @@ const bookAppointment = async (req, res, next) => {
 
         delete appointment_details.uid
 
-        console.log(appointment_details)
+        // console.log(appointment_details)
 
         const appointment = new Appointment(appointment_details)
         await appointment.save()
@@ -83,7 +83,7 @@ const bookAppointment = async (req, res, next) => {
         res.status(201).send({ message: "Success" })
 
     } catch (err) {
-        console.log(err)
+        // console.log(err)
         res.status(500).send({ message: "Internal server error" })
     }
 }
@@ -220,7 +220,6 @@ const getAppointmentDetailsById = async (req, res, next) => {
         appointment.nurseDetails.avatar = makeImgToBuffer64(appointment.nurseDetails.avatar)
         appointment.userDetails.avatar = makeImgToBuffer64(appointment.userDetails.avatar)
 
-        delete nurse, user
 
         res.status(200).send(appointment)
     } catch (err) {

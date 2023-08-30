@@ -84,7 +84,6 @@ const changeVerificationStatus = async (req, res, next) => {
     try {
         const user_id = req.params.id
         const status = req.body.status
-        console.log(user_id)
         // const user = await User.findOne({ uid: user_id })
         const [verification, user] = await Promise.all([Verification.findOne({ user: user_id }), User.findOne({ uid: user_id })])
 

@@ -9,7 +9,7 @@ const AppointmentSchema = mongoose.Schema({
     booked_nurse: {
         type: String,
         trim: true,
-        required: true
+        // required: true
     },
     start_date: {
         type: Date,
@@ -19,11 +19,11 @@ const AppointmentSchema = mongoose.Schema({
     },
     working_hours: {
         type: Number,
-        required: true,
+        // required: true,
     },
     working_days: {
         type: Number,
-        required: true,
+        // required: true,
     },
     cost: {
         type: Number,

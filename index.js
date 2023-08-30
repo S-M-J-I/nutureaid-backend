@@ -7,6 +7,8 @@ const body_parser = require("body-parser");
 
 const app = express();
 
+module.exports = app
+
 app.use(helmet());
 app.use(cors({ origin: "*" }));
 app.use(express.json());
@@ -41,6 +43,10 @@ app.use("*", (req, res, next) => {
   res.status(404).send({ message: "Resource Not Found" });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log("Server is up!", process.env.PORT);
-});
+
+if (!module.parent) {
+  app.listen(process.env.PORT, () => {
+    console.log("Server is up!", process.env.PORT);
+  });
+}
+

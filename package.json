@@ -22,7 +22,9 @@
     "multer": "^1.4.5-lts.1",
     "nodemon": "^2.0.22",
     "sharp": "^0.32.5",
-    "sslcommerz-lts": "^1.1.0"
+    "socket.io": "^4.7.5",
+    "sslcommerz-lts": "^1.1.0",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",

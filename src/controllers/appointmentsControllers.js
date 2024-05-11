@@ -144,7 +144,8 @@ const completeAppointment = async (req, res, next) => {
         const nurse_uid = req.body.uid
         const appointment_id = req.params.id
 
-        const [appointment, nurse] = await Promise.all([Appointment.findOne({ _id: appointment_id }), User.findOne({ uid: nurse_uid })])
+        const [appointment, nurse] = await Promise.all([
+            Appointment.findOne({ _id: appointment_id }), User.findOne({ uid: nurse_uid })])
         appointment.ongoing = false
         appointment.completed = true
 

@@ -8,10 +8,6 @@ const http = require('http')
 
 const app = express();
 
-const server = http.createServer(app);
-const io = require('socket.io')(server)
-require("./socketio")(io)
-
 app.use(helmet());
 app.use(cors({ origin: "*" }));
 app.use(express.json());
@@ -29,8 +25,6 @@ const payment_routes = require("./src/routes/paymentRoutes")
 const review_routes = require("./src/routes/reviewRoutes")
 const activity_routes = require("./src/routes/activityRoutes");
 
-module.exports = { app }
-
 // * AUTH SERVICE ROUTES
 app.use("/api/auth/user/", user_routes);
 app.use("/api/auth/appointment/", appointment_routes);
@@ -46,10 +40,7 @@ app.use("*", (req, res, next) => {
   res.status(404).send({ message: "Resource Not Found" });
 });
 
-
-if (!module.parent) {
-  server.listen(process.env.PORT, () => {
-    console.log("Server is up!", process.env.PORT);
-  });
-}
+app.listen(process.env.PORT, () => {
+  console.log("Server is up!", process.env.PORT);
+});
 

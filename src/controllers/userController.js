@@ -4,8 +4,6 @@ const sharp = require('sharp')
 const fs = require('fs')
 const { makeImgToBuffer64 } = require('./utils')
 const path = require('path')
-const eventEmitter = require('../events/event')
-const connectedUsers = require('../events/ConnectedUsers')
 
 /**
  * Make a user entry into the database
@@ -75,10 +73,6 @@ const setAccountDetail = async (req, res, next) => {
         user[key] = req.body[key]
 
         await user.save()
-
-        // socket = connectedUsers[user.uid]
-        // console.log(socket)
-        // socket.emit("user-details", user.cleanUser())
 
         res.status(200).send(user.cleanUser())
     } catch (err) {

@@ -1,10 +1,24 @@
 const express = require("express")
 const Activity = require("../models/Activity")
+const Appointment = require("../models/Appointment")
 const router = express.Router()
 
 router.get("/get/:uid", async (req, res) => {
     try {
         const activities = await Activity.find({ user: req.params.uid, checked: false })
+
+        res.status(200).send(activities)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ message: "Internal Error" })
+    }
+})
+
+router.get("/get/by/appointment/:appointment_id", async (req, res) => {
+    try {
+        const appointment = await Appointment.findOne({ _id: req.params.appointment_id })
+
+        const activities = await Activity.find({ user: appointment.booked_by, checked: false })
 
         res.status(200).send(activities)
     } catch (err) {
@@ -50,5 +64,8 @@ router.post("/checked/:uid/:act", async (req, res) => {
         res.status(500).send({ message: "Internal Error" })
     }
 })
+
+
+
 
 module.exports = router
